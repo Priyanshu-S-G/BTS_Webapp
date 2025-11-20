@@ -1,0 +1,72 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+.notebooks/
+
+# --- Model files (DO NOT COMMIT HEAVY WEIGHTS) ---
+models/**/*.h5
+models/**/*.hdf5
+models/**/*.keras
+models/**/*.pt
+models/**/*.pth
+models/**/*.onnx
+
+# Training artifacts
+*.ckpt
+*.ckpt.*
+events.out.tfevents.*
+logs/
+wandb/
+mlruns/
+
+# --- Data (never commit MRI files) ---
+*.nii
+*.nii.gz
+*.npy
+*.npz
+*.h5
+*.hdf5
+data/
+datasets/
+input/
+
+# Temporary, cache
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
+.history/
+
+# Flask
+instance/
+*.log
+
+# Node / frontend
+node_modules/
+dist/
+build/
+
+# Environment / secrets
+.env
+.env.*
+*.secret
+*.token
