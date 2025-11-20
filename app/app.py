@@ -25,8 +25,11 @@ from inference import predict_mask, mask_to_png_b64, preview_rgb_b64
 import utils
 
 # Allowed model names (folders under /models)
-AVAILABLE_MODELS = [d for d in os.listdir(os.path.join("..") if os.path.isdir(os.path.join("..", "models")) else "models")
-                    if os.path.isdir(os.path.join("models", d))]  # attempt to list models; will work when run from repo root
+try:
+    AVAILABLE_MODELS = [d for d in os.listdir("models") if os.path.isdir(os.path.join("models", d))]
+except Exception:
+    # fallback if models folder missing or script run from unexpected cwd
+    AVAILABLE_MODELS = ["unet", "segnet", "minisegnet"]
 
 # For a robust check fallback list (will still allow common names)
 FALLBACK_MODELS = ["unet", "segnet", "minisegnet"]

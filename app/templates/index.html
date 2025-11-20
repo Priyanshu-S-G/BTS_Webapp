@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BRATS Inference Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .preview img {
+            max-width: 100%;
+            margin-top: 15px;
+            border: 1px solid #ccc;
+        }
+        .row {
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2>BRATS 2D Slice Segmentation</h2>
+
+    <div class="row">
+        <label>FLAIR (.nii/.nii.gz)</label>
+        <input type="file" id="flair" accept=".nii,.nii.gz">
+    </div>
+
+    <div class="row">
+        <label>T1 (.nii/.nii.gz)</label>
+        <input type="file" id="t1" accept=".nii,.nii.gz">
+    </div>
+
+    <div class="row">
+        <label>T1CE (.nii/.nii.gz)</label>
+        <input type="file" id="t1ce" accept=".nii,.nii.gz">
+    </div>
+
+    <div class="row">
+        <label>T2 (.nii/.nii.gz)</label>
+        <input type="file" id="t2" accept=".nii,.nii.gz">
+    </div>
+
+    <div class="row">
+        <label>Model</label>
+        <select id="model">
+            <option value="unet">UNet</option>
+            <option value="segnet">SegNet</option>
+            <option value="minisegnet">MiniSegNet</option>
+        </select>
+    </div>
+
+    <div class="row">
+        <label>Slice index (optional)</label>
+        <input type="number" id="slice_index" placeholder="leave empty for center slice">
+    </div>
+
+    <button id="runBtn">Generate Mask</button>
+
+    <h3>Preview (RGB from 3 channels)</h3>
+    <img id="preview_img" style="display:none;">
+
+    <h3>Predicted Mask</h3>
+    <img id="mask_img" style="display:none;">
+
+    <h3>Debug Info</h3>
+    <pre id="debug"></pre>
+</div>
+
+<script src="/static/js/predict.js"></script>
+</body>
+</html>
