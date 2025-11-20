@@ -10,8 +10,9 @@ Expectations:
 
 Notebook reference (uploaded): /mnt/data/BraTS_kaggle.ipynb
 """
-import os
+
 import io
+import os
 import base64
 from functools import lru_cache
 import importlib.util
@@ -20,7 +21,7 @@ import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
 
-from app import utils  # relative import from app package
+import utils  # relative import from app package
 
 # If you want a quick reference to the notebook used for training/debug:
 NOTEBOOK_PATH = "/mnt/data/BraTS_kaggle.ipynb"

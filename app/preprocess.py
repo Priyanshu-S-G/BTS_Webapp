@@ -12,6 +12,8 @@ Main functions:
 - build_preprocessed_from_files(file_dict, slice_index=None, target=(128,128)) -> (128,128,4), used_slice
 """
 import io
+import os
+import tempfile
 from typing import Dict, Tuple
 import numpy as np
 import nibabel as nib
@@ -24,15 +26,51 @@ CHANNEL_ORDER = ["flair", "t1", "t1ce", "t2"]
 def load_volume(fileobj) -> np.ndarray:
     """
     Load a NIfTI volume from a file-like object or path.
-    Returns numpy array of shape (H, W, Z) or (H, W) for single-slice files.
+    - If fileobj has a .read() (uploaded FileStorage), write to a temporary file first
+      because nibabel on some platforms expects a real filename.
+    - If fileobj is a path-like (str / Path), load directly.
+
+    Returns numpy array (H, W, Z) or (H, W) for single-slice files.
     """
-    # nibabel accepts file-like objects via BytesIO
-    if hasattr(fileobj, "read"):
-        data = nib.load(io.BytesIO(fileobj.read())).get_fdata()
-    else:
-        # assume path-like
+    # If it's a path or path-like, let nibabel load it directly
+    if isinstance(fileobj, (str, os.PathLike)):
         data = nib.load(fileobj).get_fdata()
-    return np.asarray(data)
+        return np.asarray(data)
+
+    # If it's a Flask FileStorage or any file-like object, try to use .save if available
+    tmp_path = None
+    try:
+        # Werkzeug FileStorage has .save(filename)
+        if hasattr(fileobj, "save"):
+            # create a temp file with .nii suffix
+            tf = tempfile.NamedTemporaryFile(delete=False, suffix=".nii")
+            tmp_path = tf.name
+            tf.close()
+            fileobj.save(tmp_path)
+            data = nib.load(tmp_path).get_fdata()
+            return np.asarray(data)
+
+        # Otherwise, try to read bytes and write to temp file
+        if hasattr(fileobj, "read"):
+            bytes_data = fileobj.read()
+            tf = tempfile.NamedTemporaryFile(delete=False, suffix=".nii")
+            tmp_path = tf.name
+            with open(tmp_path, "wb") as f:
+                f.write(bytes_data)
+            data = nib.load(tmp_path).get_fdata()
+            return np.asarray(data)
+
+        # fallback: try nibabel directly (may fail)
+        data = nib.load(fileobj).get_fdata()
+        return np.asarray(data)
+
+    finally:
+        # cleanup temp file if we created one
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
 
 
 def extract_slice_from_volumes(volumes: Dict[str, np.ndarray], slice_index: int = None) -> Tuple[np.ndarray, int]:
